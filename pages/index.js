@@ -1,111 +1,99 @@
 import React, { Component } from 'react';
-import { Form, Button, Input, Message, Dimmer, Loader } from 'semantic-ui-react';
-import Layout from '../components/Layout';
+import { Card, Button, Input, Form ,Grid} from 'semantic-ui-react';
+import Campaign from '../ethereum/patientFactory';
 import factory from '../ethereum/factory';
-import web3 from '../ethereum/web3';
-import { Router } from '../routes';
-import { Carousel, Container, Row, Col} from 'react-bootstrap';
+import Layout from '../components/Layout';
+import { Link } from '../routes';
 
-const divStyle = {
-    width: `600px`,
+class CampaignIndex extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {value: ''};
+
+    
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handlePush = this.handlePush.bind(this);
+    this.handleCheck = this.handleCheck.bind(this);
+  }
+
+  
+  static async getInitialProps(props) {
+
+    const patientsIds = await factory.methods.getDeployedIds().call();
+    const addresses = await factory.methods.getDeployedPatientsAddress().call();
+   
+    return { patientsIds, addresses };
 }
 
-const imgStyle = {
-    height: `400px`
+handleChange(event) {
+  this.setState({value: event.target.value});
 }
 
-class CampaignNew extends Component {
+handleSubmit(event) {
 
-    state = {
-        errorMessage: '',
-        loading: false
-    };
+  console.log(this.props.patientsIds);
+  console.log(this.props.addresses);
 
-    onSubmit = async (event) => {
-        event.preventDefault();
-        
-        const account = await web3.eth.getAccounts();
-        console.log(account[0]);
-        
-        this.setState({ loading: true, errorMessage: '' });
-        
+  const id = this.state.value;
+  this.handlePush(id);
 
-        try {
-            const add = await factory.methods
-                .createCampaign()
-                .send({
-                    from: account[0]
-                });
+}
 
-            const campaigns = await factory.methods.getDeployedCampaigns().call();
+async handlePush(item) {
 
-            const address = campaigns[campaigns.length - 1];
+  if( this.handleCheck(item) == false ) {
 
-            Router.pushRoute(`/campaigns/${address}/dashboard`);
+    const account = await web3.eth.getAccounts();
 
-        } catch (err) {
-            this.setState({ errorMessage: err.message });
-            this.setState({ loading: false });
-        }
-    };
+    console.log(account[0]);
+
+    // try {
+          
+    //     const newPat = await factory.methods
+    //     .createPatient(this.state.value)
+    //     .send({
+    //         from: account[0]
+    //     });
+          
+    //       const campaigns = await factory.methods.getDeployedPatientsAddress().call();
+
+    //       const address = campaigns[campaigns.length - 1];
+
+    //       console.log(newPat);
+    //       console.log(address);
+    // } catch (err) {
+    //   console.log(err);
+    // }
+
+  } else {
+    console.log('Exists');
+  }
+}
+
+handleCheck(val) {
+  return this.props.patientsIds.some(item => val === item);
+ }
 
     render() {
-        
-        return (
-            <Layout>
-                <Container>
-                    <Row>
-                        <Col xs={6} md={6}>
-                            <div>
-                                <br/><br/><br/><br/><br/>
-                                <h3 textalign='center'>Book a Cab</h3>
-                                <br/>
-                                <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage} >
 
-                                    <Button style={{ marginTop: '10px' }} primary> Create a Request </Button>
-                                    <Message error header="Something Went Wrong." content={this.state.errorMessage} />
-
-                                </Form>
-                                <Dimmer active={this.state.loading} inverted>
-                                    <Loader size='large'>Deploying booking request on Blockchain.</Loader>
-                                </Dimmer>
-
-                            </div>
-                        </Col>
-                        <Col xs={12} md={6}>
-                            <div style={divStyle}>
-                                <Carousel interval={3000} fade={true} controls={false}>
-                                    <Carousel.Item>
-                                        <img style={imgStyle}
-                                            className="d-block w-100"
-                                            src="https://www.mishawakataxiservice.com/uploads/8/9/6/2/89626275/6487161_1_orig.jpg"
-                                            alt="First slide"
-                                        />
-                                    </Carousel.Item>
-
-                                    <Carousel.Item>
-                                        <img style={imgStyle}
-                                            className="d-block w-100"
-                                            src="https://d3l69s690g8302.cloudfront.net/wp-content/uploads/2015/02/20120322/Taxi-624x312.jpg"
-                                            alt="second slide"
-                                        />
-                                    </Carousel.Item>
-
-                                    <Carousel.Item>
-                                        <img style={imgStyle}
-                                            className="d-block w-100"
-                                            src="https://media.cntraveller.in/wp-content/uploads/2018/08/GoaMiles1-866x487.jpg"
-                                            alt="Third slide"
-                                        />
-                                    </Carousel.Item>
-                                </Carousel>
-                            </div>
-                        </Col>
-                    </Row>
-                </Container>
-            </Layout>
-        );
-    }
+      return (
+      <Layout>
+        <Grid>
+          <Grid.Column width={6}>
+          <Form onSubmit={this.handleSubmit}>
+                <Form.Field>
+                  <label>Enter your Aadhar number</label>
+                  <Input type="text" value={this.state.value} onChange={this.handleChange} />
+                </Form.Field>
+                <Input type="submit" value="Submit" />
+            </Form>
+            </Grid.Column>
+        </Grid>
+      </Layout>
+    );
+  }
 }
 
-export default CampaignNew;
+export default CampaignIndex;

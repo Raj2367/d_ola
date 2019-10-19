@@ -1,6 +1,6 @@
 const HDWalletProvider = require('truffle-hdwallet-provider');
 const Web3 = require('web3');
-const compiledFactory = require('./build/CampaignFactory.json');
+const compiledFactory = require('./build/PatientFactory.json');
 
 const provider = new HDWalletProvider(
   'dream token crouch lecture scrap grow shove fold inmate jazz undo miracle',

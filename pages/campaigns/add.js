@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Form, Button, Message, Label, Input, Grid, Image,Dimmer, Loader, Card } from 'semantic-ui-react';
-import Campaign from '../../ethereum/campaign';
+import Campaign from '../../ethereum/patient';
 import web3 from '../../ethereum/web3';
 import { Link, Router } from '../../routes';
 import Layout from '../../components/Layout';
@@ -203,5 +203,5 @@ class RequestNew extends Component {
 }
 
 export default GoogleApiWrapper({
-    apiKey: 'AIzaSyDCVpYzEWOzQQxpQGw8fEanrHfoSIKnjGQ'
+    apiKey: 'AIzaSyAOqnkKCbilzHysloyziDGVUGOFMWPPuVg'
   })(RequestNew);
